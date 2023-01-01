@@ -58,10 +58,10 @@ $$(OBJ)/.$(1)-dist$(3):
 	mkdir -p $$($(2)_LIBDIR$(3))/ $$(DST_LIBDIR$(3))/
 	cd $$($(2)_LIBDIR$(3)) && find -type f -printf '$$(DST_LIBDIR$(3))/%h\0' | sort -z | uniq -z | xargs $(--verbose?) -0 -r -P$$(J) mkdir -p
 	cd $$($(2)_LIBDIR$(3)) && find -type l -printf '%p\0$$(DST_LIBDIR$(3))/%p\0' | xargs $(--verbose?) -0 -r -P$$(J) -n2 cp -a
-	cd $$($(2)_LIBDIR$(3)) && find -type f -not '(' -iname '*.pc' -or -iname '*.cmake' -or -iname '*.a' -or -iname '*.la' -or -iname '*.def' ')' \
+	cd $$($(2)_LIBDIR$(3)) && find -type f -not '(' -iname '*.pc' -or -iname '*.cmake' -or -iname '*.a' -or -iname '*.la' -or -iname '*.def' -or -iname '*.h' ')' \
 	    -printf '--only-keep-debug\0%p\0$$(DST_LIBDIR$(3))/%p.debug\0' | \
 	    xargs $(--verbose?) -0 -r -P$$(J) -n3 objcopy --file-alignment=4096
-	cd $$($(2)_LIBDIR$(3)) && find -type f -not '(' -iname '*.pc' -or -iname '*.cmake' -or -iname '*.a' -or -iname '*.la' -or -iname '*.def' ')' \
+	cd $$($(2)_LIBDIR$(3)) && find -type f -not '(' -iname '*.pc' -or -iname '*.cmake' -or -iname '*.a' -or -iname '*.la' -or -iname '*.def' -or -iname '*.h' ')' \
 	    -printf '--add-gnu-debuglink=$$(DST_LIBDIR$(3))/%p.debug\0--strip-debug\0%p\0$$(DST_LIBDIR$(3))/%p\0' | \
 	    xargs $(--verbose?) -0 -r -P$$(J) -n4 objcopy --file-alignment=4096 --set-section-flags .text=contents,alloc,load,readonly,code
 	touch $$@
@@ -71,9 +71,9 @@ $$(OBJ)/.$(1)-dist$(3):
 	mkdir -p $$($(2)_LIBDIR$(3))/ $$(DST_LIBDIR$(3))/
 	cd $$($(2)_LIBDIR$(3)) && find -type f -printf '$$(DST_LIBDIR$(3))/%h\0' | sort -z | uniq -z | xargs $(--verbose?) -0 -r -P$$(J) mkdir -p
 	cd $$($(2)_LIBDIR$(3)) && find -type l -printf '%p\0$$(DST_LIBDIR$(3))/%p\0' | xargs $(--verbose?) -0 -r -P$$(J) -n2 cp -a
-	cd $$($(2)_LIBDIR$(3)) && find -type f -not '(' -iname '*.pc' -or -iname '*.cmake' -or -iname '*.a' -or -iname '*.la' -or -iname '*.def' ')' \
+	cd $$($(2)_LIBDIR$(3)) && find -type f -not '(' -iname '*.pc' -or -iname '*.cmake' -or -iname '*.a' -or -iname '*.la' -or -iname '*.def' -or -iname '*.h' ')' \
 	    -printf '$$(DST_LIBDIR$(3))/%p.debug\0' | xargs $(--verbose?) -0 -r -P$$(J) rm -f
-	cd $$($(2)_LIBDIR$(3)) && find -type f -not '(' -iname '*.pc' -or -iname '*.cmake' -or -iname '*.a' -or -iname '*.la' -or -iname '*.def' ')' \
+	cd $$($(2)_LIBDIR$(3)) && find -type f -not '(' -iname '*.pc' -or -iname '*.cmake' -or -iname '*.a' -or -iname '*.la' -or -iname '*.def' -or -iname '*.h' ')' \
 	    -printf '--strip-debug\0%p\0$$(DST_LIBDIR$(3))/%p\0' | \
 	    xargs $(--verbose?) -0 -r -P$$(J) -n3 objcopy --file-alignment=4096 --set-section-flags .text=contents,alloc,load,readonly,code
 	touch $$@
@@ -124,7 +124,7 @@ $(2)_ENV$(3) = \
     RC="$$(TARGET_CROSS$(3))-windres" \
     WIDL="$$(TARGET_CROSS$(3))-widl" \
     PKG_CONFIG="$$(TARGET_$(3))-pkg-config" \
-    PATH="$$(call list-join,:,$$(foreach d,$$($(2)_DEPS$(3)),$$($$(d)_BINDIR$(3))),,:):$$(SRC)/glslang/bin:$$$$PATH" \
+    PATH="$$(call list-join,:,$$(foreach d,$$($(2)_DEPS$(3)),$$($$(d)_BINDIR$(3))),,:):$$$$PATH" \
     LD_LIBRARY_PATH="$$(call list-join,:,$$(foreach d,$$($(2)_DEPS$(3)),$$($$(d)_LIBDIR$(3))),,:)$$$$LD_LIBRARY_PATH" \
     PKG_CONFIG_PATH="$$(call list-join,:,$$(foreach d,$$($(2)_DEPS$(3)),$$($$(d)_LIBDIR$(3))/pkgconfig))" \
     PKG_CONFIG_LIBDIR="/usr/lib/$$(PKG_CONFIG_TARGET_$(4)$(3))/pkgconfig:/usr/share/pkgconfig" \
